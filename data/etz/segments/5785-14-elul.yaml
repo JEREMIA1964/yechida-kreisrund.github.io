@@ -1,0 +1,26 @@
+version: 0
+id: geburtstag:5785-14-elul:jbr.wolff
+stable_ref: 5785-14-elul:leipzig:st-georg
+quelle: { autor: "@jbr.wolff", ort: "Leipzig, St. Georg Hospital", festgehalten_am: "2025-09-08T13:06:00+02:00" }
+kalender: { gregorianisch: { geburtstag_begangen: "2025-09-07" }, hebraeisch: { geburtstag_wahr: "5785-14-Elul" } }
+profil:
+  L0: "Chronologischer Marker"
+  L1: "Lebensübergang / bewusste Geburt"
+  L2: "N^3, !K!, !C!, ES"
+  L3: "Besinnung: !K! richtet auf ES; !C! markiert Mangel"
+  L4: "Form: Abkürzungen, deutsch/hebr."
+  L5: "Didaktik: tägliche Ausrichtung"
+spur:
+  einheit: ticks
+  segmente:
+    - sid: seg:5785-14-elul:geburt-61
+      idx: 0
+      start: 0
+      ende: 61
+      ringe:
+        L0: "2025-09-07 / 5785-14-Elul"
+        L1: "Erste bewusst gesetzte Geburt"
+        L2: "N^3 → Licht; Kawana: !K!; Chissaron: !C!; Quelle: ES"
+        L3: "Negation als Kelim; Ausrichtung auf Ejn Sof"
+        L4: "Notation: deutsch/hebr."
+        L5: "Anwendung: tägliche Besinnung"

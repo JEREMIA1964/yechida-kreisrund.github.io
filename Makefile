@@ -16,8 +16,10 @@ gematria:
 
 checksums:
 	rm -f CHECKSUMS.sha256
-	find data tools out -type f \
-	  ! -name "*.DS_Store" -print0 | sort -z | xargs -0 shasum -a 256 > CHECKSUMS.sha256
+	mkdir -p out
+	find data tools out -type f ! -name "*.DS_Store" -print0 \
+	| xargs -0 shasum -a 256 \
+	| LC_ALL=C sort > CHECKSUMS.sha256
 
 verify:
 	[ -x verify.sh ] && bash verify.sh || echo "verify.sh (optional) nicht gefunden – ok"
@@ -25,8 +27,9 @@ verify:
 push:
 	[ -d .git ] || git init
 	git add .
-	git commit -m "build(kreisrund): Q! Upgrade (WWAQ, Kaf/Kuf, Gematria); $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
+	git commit -m "build(kreisrund): Q! Upgrade (WWAQ, Kaf/Kuf, Gematria); $(shell date -u +%Y-%m-%dT%H:%M:%SZ)" || true
 	git branch -M main
 	git remote remove origin 2>/dev/null || true
-	git remote add origin git@github.com:Jeremia1964/yechida-kreisrund.github.io.git
+	# Fallback: HTTPS (keine SSH-Keys nötig)
+	git remote add origin https://github.com/Jeremia1964/yechida-kreisrund.github.io.git
 	git push -u origin main
