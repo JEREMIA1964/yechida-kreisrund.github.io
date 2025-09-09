@@ -26,19 +26,15 @@ class Glossar:
     def _load(self, path: pathlib.Path):
         obj, _ = load_yaml(path)
         for g in obj.get('begriffe', []):
-            gid = g['id']
-            self.kanon[gid] = g
+            gid = g['id']; self.kanon[gid] = g
             names = set()
             names.update(g.get('regeln', {}).get('erlaubte_schreibungen', []))
             l = g.get('lemma', {})
             if isinstance(l, dict):
                 for k in ('de','translit','he'):
-                    v = l.get(k)
-                    if v: names.add(str(v))
-            for a in g.get('abk', []):
-                names.add(a)
-            for name in names:
-                self.alias[name] = gid
+                    v = l.get(k);  v and names.add(str(v))
+            for a in g.get('abk', []): names.add(a)
+            for name in names: self.alias[name] = gid
         for k, v in obj.get('alias', {}).items():
             self.alias[k] = v
 
@@ -49,20 +45,20 @@ class Glossar:
             if re.search(pattern, text):
                 hits.append({'name': name, 'gid': gid})
         uniq = {}
-        for h in hits:
-            uniq.setdefault(h['gid'], h)
+        for h in hits: uniq.setdefault(h['gid'], h)
         return list(uniq.values())
 
 def emit_vttr(obj, gloss: 'Glossar|None'):
     lines = ["WEBVTT", f"X-UNITS: {X_UNITS}"]
     for s in obj.get('spur',{}).get('segmente',[]):
-        start = s['start']; end = s.get('ende', s.get('end', None))
-        if end is None:
-            raise ValueError('Segment ohne ende/end')
-        sid = s['sid']
+        if 'ende' in s: end = s['ende']
+        elif 'end' in s: end = s['end']
+        else: raise ValueError('Segment ohne ende/end')
+        start = s['start']; sid = s['sid']
         ringe = s.get('ringe',{})
         l2 = str(ringe.get('L2',''))
         gloss_hits = gloss.scan_text(l2) if gloss else []
+        paradigma = s.get('paradigma')  # z.B. "checksum"
 
         lines.append("")
         lines.append(sid)
@@ -72,6 +68,8 @@ def emit_vttr(obj, gloss: 'Glossar|None'):
         if gloss_hits:
             annot = ",".join([f"{h['gid']}({h['name']})" for h in gloss_hits])
             lines.append(f"X-GLOSS: {annot}")
+        if paradigma:
+            lines.append(f"X-PARADIGMA: {paradigma}")
     return ("\n".join(lines) + "\n").encode('utf-8')
 
 def emit_index(obj, src_bytes, vttr_bytes, src_path):
@@ -90,7 +88,7 @@ def emit_index(obj, src_bytes, vttr_bytes, src_path):
 
 def main():
     import argparse
-    ap = argparse.ArgumentParser(description='etz-compile (ticks) + Glossar')
+    ap = argparse.ArgumentParser(description='etz-compile (ticks) + Glossar + Paradigma')
     ap.add_argument('--src', default='data/etz/segments', help='YAML-Segmente')
     ap.add_argument('--out', default='out', help='Ausgabeverzeichnis')
     ap.add_argument('--index', default='data/etz/etz.jsonl', help='Index-Datei')
