@@ -6,3 +6,7 @@ out/*.map
 out/**/*.map
 # wenn build-Artefakte nicht versioniert werden sollen:
 # out/
+
+# Ignore accidental files
+\#
+verify
