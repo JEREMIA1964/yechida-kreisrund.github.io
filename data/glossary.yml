@@ -1,283 +1,32 @@
-# KREISRUND – **Q! UPGRADE** (WWAQ, Kaf/Kuf, Gematria, Makefile)
-
-Dieses Upgrade verankert **Q! = Qabbala** (Wissenschaft der Weisheit der Authentischen Qabbala, **WWAQ**) in Daten, Regeln und Build. Es führt strikte **Kaf/Kuf‑Regeln**, deutsche **Umschrift mit Doppelbuchstaben**, Abkürzungen (AQ, QQ …), und eine **Gematria‑Pipeline (1–400)** ein. Außerdem: ein **Makefile** mit `make build`, `make verify`, `make push`.
-
----
-
-## 1) Glossar‑Erweiterung (Q!, WWAQ, Orthographie)
-
-**Patch für** `data/glossary.yml` (Abschnitte einfügen/ergänzen):
-
-```yaml
-# ——— Q! / WWAQ ———
+version: 0
+sprache: de
 begriffe:
-  - id: gloss:qabbala
-    lemma: { he: "קַבָּלָה", de: "Qabbala", translit: "Qabbala" }
-    abk: ["Q!", "Q", "WWAQ"]
-    deutsch: ["Wissenschaft der Weisheit der authentischen Qabbala"]
-    bedeutung: >
-      Ausrichtung auf die Überlieferung (Q-B-L: empfangen). Im Projekt als Q! markiert.
-      Schreibweise mit **Q** (nicht K), gemäß Wurzel **Qof** (ק) und deutscher Umschrift.
-    regeln:
-      normalform: "Qabbala"
-      erlaubte_schreibungen: ["Qabbala", "Q!", "WWAQ"]
-      zu_vermeiden: ["Kabbala", "Kabala", "Kaballah"]
-    ringe: { L2: "Terminologie", L3: "Besinnung/Ausrichtung" }
+  - id: gloss:kawana
+    lemma: { he: "כוונה", de: "Kawana", translit: "Kawana" }
+    abk: ["K!", "!K!", "!!"]
+    regeln: { erlaubte_schreibungen: ["Kawana","K!","!K!","!!"] }
 
-  - id: gloss:ari
-    lemma: { he: "האר"י", de: "ARI (Rabbi Jizchak Luria)", translit: "ARI" }
-    abk: ["ARI"]
-    deutsch: ["Rabbi Isaak Luria", "Lurianische Qabbala"]
-    bedeutung: >
-      Bezug auf die Lehre des ARI. Q!-Schreibweise und Duden‑konforme Umschrift.
-    regeln: { normalform: "ARI" }
+  - id: gloss:chissaron
+    lemma: { he: "חיסרון", de: "Chissaron", translit: "Chissaron" }
+    abk: ["C","!C!"]
+    regeln: { erlaubte_schreibungen: ["Chissaron","C","!C!"] }
 
-# ——— Orthographie (Kaf/Kuf, Doppelbuchstaben) ———
-orthographie:
-  kaf_kuf:
-    regel: >
-      **Qof (ק) → Q**, **Kaf (כ/ך) → K**. Dadurch werden Bedeutungen unterschieden
-      (z. B. Qabbala mit Q). Diese Regel ist **strikt** im gesamten Projekt.
-    beispiele:
-      - he: "תיקון"; de: "Tiqqun"    # Doppel‑q
-      - he: "חסד";   de: "Chessed"   # Doppel‑s
-      - he: "יסוד";  de: "Jessod"    # Doppel‑s
-      - he: "אדם קדמון"; de: "Adam Qadmon"; abk: ["AQ"]
-  doppelbuchstaben:
-    regel: >
-      Geminate im Deutschen **sichtbar** machen: qq, ss, tt …
-    beispiele:
-      - translit: "Tiqqun"  # nicht: "Tikun"
-      - translit: "Chessed"  # nicht: "Chesed"
-      - translit: "Jessod"   # nicht: "Jesod"/"Yesod"
-  abkuerzungen:
-    mapping:
-      - src: "אב"; de: "AB"
-      - src: "ס"ג"; de: "SaG"
-      - src: "מ"ה"; de: "MaH"
-      - src: "ב"ן"; de: "BoN"
-      - src: "ג"ר דבינה"; de: "GaR de Bina"
-      - src: "חגת"; de: "CHaGaT"
-      - src: "נה"י"; de: "NHJ"
-      - src: "נה"י"ם"; de: "NHJM"
-      - src: "גבורה"; de: "Gebura"
-  alias:
-    QQ: "gloss:qabbala"   # QQ = Qabbala + Quanten (siehe unten)
+  - id: gloss:ejn-sof
+    lemma: { he: "אין סוף", de: "Ejn Sof", translit: "Ejn Sof" }
+    abk: ["ES"]
+    regeln: { erlaubte_schreibungen: ["Ejn Sof","ES"] }
 
-# ——— Quanten‑Bezug (QQ) ———
-begriffe:
-  - id: gloss:quantum
-    lemma: { de: "Quantenmechanik", translit: "Quantum" }
-    abk: ["Q"]
-    deutsch: ["Quanten", "Quantenmechanik"]
-    bedeutung: >
-      Bezug auf naturwissenschaftliches Q. In *QQ* (Qabbala+Quantum) als Dialog verstanden,
-      keine Gleichsetzung. QQ dient als Denkfigur, nicht als physikalischer Beweis.
-    regeln: { normalform: "Quantenmechanik" }
-```
+  - id: gloss:nichthochdrei
+    lemma: { de: "Nichthochdrei" }
+    abk: ["N^3","n3"]
+    regeln: { erlaubte_schreibungen: ["Nichthochdrei","N^3","n3"] }
 
-> **Alias‑Block** im Glossar (falls vorhanden) bitte erweitern:
-
-```yaml
 alias:
-  "Q!": "gloss:qabbala"
-  "Q":  "gloss:quantum"
-  "WWAQ": "gloss:qabbala"
-  "QQ": "gloss:qabbala"   # symbolisch; führt zur Q!-Wurzel
-  "AQ": "gloss:adam-qadmon"
-```
-
-Ergänze ggf. fehlende Basisbegriffe (Adam Qadmon, CHaGaT, NHJ, NHJM) als eigene `begriffe`‑Einträge.
-
----
-
-## 2) Neue Datei: **`data/translit.yml`** (Validierungsregeln)
-
-```yaml
-version: 0
-quelle: "@jbr.wolff"
-regeln:
-  kaf_kuf:
-    qof_to: "Q"
-    kaf_to: "K"
-  doppelt:
-    sichtbar: true
-    beispiele: ["Tiqqun", "Chessed", "Jessod"]
-  duden:
-    aktiv: true
-    hinweis: "Deutsche Umschrift vorrangig; Englisch vermeiden"
-```
-
----
-
-## 3) Gematria (1–400) – Daten + Generator
-
-### 3.1 Datei: **`data/gematria_base.yml`**
-
-```yaml
-version: 0
-alefbet:
-  - { he: "א", de: "Alef",  val: 1 }
-  - { he: "ב", de: "Bet",   val: 2 }
-  - { he: "ג", de: "Gimel", val: 3 }
-  - { he: "ד", de: "Dalet", val: 4 }
-  - { he: "ה", de: "He",    val: 5 }
-  - { he: "ו", de: "Waw",   val: 6 }
-  - { he: "ז", de: "Sajin", val: 7 }
-  - { he: "ח", de: "Chet",  val: 8 }
-  - { he: "ט", de: "Tet",   val: 9 }
-  - { he: "י", de: "Jod",   val: 10 }
-  - { he: "כ", de: "Kaf",   val: 20, finale: "ך" }
-  - { he: "ל", de: "Lamed", val: 30 }
-  - { he: "מ", de: "Mem",   val: 40, finale: "ם" }
-  - { he: "נ", de: "Nun",   val: 50, finale: "ן" }
-  - { he: "ס", de: "Samech",val: 60 }
-  - { he: "ע", de: "Ajin",  val: 70 }
-  - { he: "פ", de: "Pe",    val: 80, finale: "ף" }
-  - { he: "צ", de: "Zadi",  val: 90, finale: "ץ" }
-  - { he: "ק", de: "Qof",   val: 100 }
-  - { he: "ר", de: "Resch", val: 200 }
-  - { he: "ש", de: "Schin", val: 300 }
-  - { he: "ת", de: "Taw",   val: 400 }
-optionen:
-  finales_als_hundert: false  # klassisch true/false je Tradition
-```
-
-### 3.2 Generator: **`tools/gematria_build.py`**
-
-```python
-#!/usr/bin/env python3
-# Erzeugt data/gematria_1_400.json aus data/gematria_base.yml
-import json, yaml, pathlib
-
-BASE = pathlib.Path('data/gematria_base.yml')
-OUT  = pathlib.Path('data/gematria_1_400.json')
-
-def main():
-  base = yaml.safe_load(BASE.read_text(encoding='utf-8'))
-  alphabet = base['alefbet']
-  vals = [a['val'] for a in alphabet]
-  maxv = 400
-  table = {str(i): i for i in range(1, maxv+1)}
-  OUT.write_text(json.dumps(table, ensure_ascii=False, indent=2), encoding='utf-8')
-  print(f"OK gematria 1..{maxv} -> {OUT}")
-
-if __name__ == '__main__':
-  main()
-```
-
-> **Hinweis:** Für Wort‑Gematria später einfach eine Funktion ergänzen, die über `alefbet` (inkl. Finalformen) summiert.
-
----
-
-## 4) `etz-compile` – Checks für Q!/Translit/Gematria (leichtgewichtig)
-
-**Patch** für `tools/etz_compile.py` (am Kopf zusätzliche Ladungen):
-
-```python
-# Zusatzladungen
-TRANS = None
-GEM = None
-try:
-  import yaml, json, pathlib
-  tp = pathlib.Path('data/translit.yml')
-  gp = pathlib.Path('data/gematria_1_400.json')
-  if tp.exists():
-    TRANS = yaml.safe_load(tp.read_text(encoding='utf-8'))
-  if gp.exists():
-    import json
-    GEM = json.loads(gp.read_text(encoding='utf-8'))
-except Exception as e:
-  print(f"WARN translit/gematria nicht geladen: {e}")
-```
-
-Beim Emittieren der L2‑Zeile ergänzen wir (falls Q!/Regeln verletzt):
-
-```python
-# Pseudocheck: einfache Heuristik
-l2s = str(ringe.get('L2',''))
-viol = []
-if 'Kabbala' in l2s: viol.append('Q!-Regel: Qabbala mit Q schreiben')
-if 'Tikun' in l2s:  viol.append('Translit: Tiqqun mit qq')
-if 'Chesed' in l2s: viol.append('Translit: Chessed mit ss')
-if viol:
-  lines.append('X-WARN: ' + ' | '.join(viol))
-```
-
----
-
-## 5) Makefile (Build, Verify, Push)
-
-**Datei:** `Makefile`
-
-```make
-SHELL := /bin/zsh
-TZ := Europe/Brussels
-
-.PHONY: build gematria checksums verify push all
-
-all: build verify
-
-build:
-	./etz-compile --src data/etz/segments --out out --index data/etz/etz.jsonl --gloss data/glossary.yml
-	@for d in data/etz/etzchajim/*; do \
-	  ./etz-compile --src "$$d" --out out --index data/etz/etz.jsonl --gloss data/glossary.yml; \
-	done
-
-gematria:
-	python3 tools/gematria_build.py
-
-checksums:
-	rm -f CHECKSUMS.sha256
-	find data tools viewer out -type f \
-	  ! -name "*.DS_Store" -print0 | sort -z | xargs -0 shasum -a 256 > CHECKSUMS.sha256
-
-verify:
-	bash verify.sh
-
-push:
-	[ -d .git ] || git init
-	git add .
-	git commit -m "build(kreisrund): Q! Upgrade (WWAQ, Kaf/Kuf, Gematria); $(shell date -u +%Y-%m-%dT%H:%M:%SZ)" || true
-	git branch -M main
-	git remote remove origin 2>/dev/null || true
-	git remote add origin git@github.com:Jeremia1964/yechida-kreisrund.github.io.git
-	git push -u origin main
-```
-
----
-
-## 6) Schnellstart (zsh)
-
-```zsh
-# Dateien anlegen/aktualisieren
-echo "== Q! Upgrade Dateien schreiben =="
-mkdir -p data tools
-$EDITOR data/glossary.yml      # Patch aus Abschnitt 1 einfügen
-$EDITOR data/translit.yml      # Regeln aus Abschnitt 2 einfügen
-$EDITOR data/gematria_base.yml # Alphabet (Abschnitt 3.1)
-$EDITOR tools/gematria_build.py
-$EDITOR tools/etz_compile.py   # Patches aus Abschnitt 4 ergänzen
-
-# Gematria-Tabelle erzeugen
-make gematria
-
-# Build + Checksummen + Verify + Push
-make build
-make checksums
-make verify
-make push
-```
-
----
-
-## 7) Ergebnis
-
-* **Q!** als zentrale Wurzel (WWAQ) normiert
-* **Kaf/Kuf** strikt: Qof→Q, Kaf→K
-* **Doppelbuchstaben** sichtbar (Tiqqun, Chessed, Jessod …)
-* **Abkürzungen** (AB, SaG, MaH, BoN; CHaGaT, NHJ, NHJM; AQ …) standardisiert
-* **Gematria 1–400** als Datentabelle vorhanden, erweiterbar auf Wort‑Gematria
-* Ein‑Befehl‑Workflow via **Makefile** (`make all`) – Identität **lokal == GitHub**
-
-> Zeitmarke: **!Q! 2025‑09‑08 14:34 MESZ (Oostende), jbr — K!**
+  "K!": "gloss:kawana"
+  "!K!": "gloss:kawana"
+  "!!": "gloss:kawana"
+  "C": "gloss:chissaron"
+  "!C!": "gloss:chissaron"
+  "ES": "gloss:ejn-sof"
+  "N^3": "gloss:nichthochdrei"
+  "n3": "gloss:nichthochdrei"
