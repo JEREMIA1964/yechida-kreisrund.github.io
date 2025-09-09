@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc
+out/*.map
+out/**/*.map
+# wenn build-Artefakte nicht versioniert werden sollen:
+# out/
